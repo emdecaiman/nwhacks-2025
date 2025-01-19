@@ -142,7 +142,7 @@ export default function Index() {
                     console.error(insertError.message);
                 } else {
                     setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
-                    setChatMessage('Ask me anything!');
+                    setChatMessage('Click here to ask me anything!');
                 }
                 setIsFirstToggle(false);
             }

@@ -134,7 +134,7 @@ export default function Auth() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 12,
+        paddingTop: 100,
         alignItems: 'center', // Center the content horizontally
         justifyContent: 'flex-start', // Align items at the top
         backgroundColor: "#25292e",
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
         marginLeft: -20,
       },
       mt20: {
-        marginTop: 20, // Add margin top to space out the elements
+        marginTop: 10, // Add margin top to space out the elements
       },
       button: {
         backgroundColor: '#1e90ff',

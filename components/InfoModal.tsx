@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        color: 'white',
     },
     modalContent: {
         width: '80%',
@@ -145,14 +144,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     itemText: {
-        color: 'white',
+        color: '#fff',
         marginBottom: 5,
-    },
-    totalText: {
-        color: 'white',
-        fontSize: 18,
-        marginTop: 20,
-        textAlign: 'center',
     },
     conversation: {
         width: '100%',
@@ -166,9 +159,17 @@ const styles = StyleSheet.create({
     sender: {
         fontWeight: 'bold',
         marginRight: 5,
+        color: '#fff', // Ensure sender text is white
     },
     message: {
         flexShrink: 1,
+        color: '#fff', // Ensure message text is white
+    },
+    totalText: {
+        color: '#fff',
+        fontSize: 18,
+        marginTop: 20,
+        textAlign: 'center',
     },
 });
 
