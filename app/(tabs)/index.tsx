@@ -1,4 +1,6 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import Button from "@/components/Button";
+import Timer from "@/components/Timer";
 import { supabase } from '../../lib/supabase';
 import { useEffect, useState } from "react";
 
@@ -18,6 +20,9 @@ async function getName(userId: string) {
 }
 
 export default function Index() {
+    const [isEnabled, setIsEnabled] = useState<Boolean>(false);
+    const studyInterval = 0.1; // or 50
+    const breakInterval = 0.1; // or 10
     const [name, setName] = useState<string | null>(null);
     const [image, setImage] = useState(require('../../assets/images/capy/capy-waving-nobg.png'));
     const [text, setText] = useState('Hi!');
@@ -54,6 +59,8 @@ export default function Index() {
                 <Image source={image} style={styles.botImage} />
                 <Text style={styles.botText}>{text}</Text>
             </View>
+            <Timer isEnabled={isEnabled} studyInterval={studyInterval} breakInterval={breakInterval} />
+            <Button label={isEnabled ? "Pause" : "Start"} onPress={() => setIsEnabled(!isEnabled)} />
         </View>
     );
 }
@@ -61,16 +68,15 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#25292e',
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      text: {
-        color: 'white',
-        fontSize: 18,
-        marginBottom: 20,
-      },
-      botContainer: {
+        backgroundColor: "#25292e",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 20,
+    },
+    text: {
+        color: "#fff",
+    },
+    botContainer: {
         position: 'absolute',
         bottom: 50,
         alignItems: 'center',
