@@ -40,17 +40,15 @@ export default function Auth() {
             return;
         }
         setLoading(true)
-        const {
-            data: { user, session },
-            error,
-        } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password,
-        })
+        });
 
         if (error) {
-            Alert.alert(error.message);
-        } else if (user) {
+            Alert.alert("ERRROOOORRR");
+        } else if (data && data.user) {
+            const user = data.user;
             // Update the user's profile with the full name
             const { error: updateError } = await supabase
                 .from('profiles')
@@ -58,6 +56,15 @@ export default function Auth() {
 
             if (updateError) {
                 Alert.alert(updateError.message);
+            } else {
+                // Insert a new row into the user_settings table
+                const { error: settingsError } = await supabase
+                    .from('user_settings')
+                    .insert({ user_id: user.id });
+
+                if (settingsError) {
+                    Alert.alert(settingsError.message);
+                }
             }
         }
         setLoading(false)
