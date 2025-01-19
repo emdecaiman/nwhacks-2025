@@ -204,7 +204,7 @@ export default function Index() {
                 />
                 <View style={styles.buttonContainer}>
                     <Button label={isEnabled ? "Pause" : "Start"} onPress={handleToggle} />
-                    {isEnabled && <Button label="End Session" onPress={handleEndSession} />}
+                    {isEnabled && <Button label="End" onPress={handleEndSession} />}
                 </View>
             </View>
             <View style={styles.botContainer}>
@@ -241,13 +241,13 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '80%',
+        gap: 30,
+
     },
     botContainer: {
         position: 'absolute',
-        bottom: 20,
-        right: 20,
+        bottom: 0,
+        right: 0,
         alignItems: 'center',
     },
     botImage: {

@@ -23,7 +23,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, pressable = false, onP
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 170,
+        bottom: 160,
         left: -60,
     },
     bubble: {

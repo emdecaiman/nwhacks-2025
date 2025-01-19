@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Alert, StyleSheet, View, AppState, TextInput, Image, Text, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Appearance, useColorScheme } from 'react-native'
 import { supabase } from '../lib/supabase'
 import { Button, Input} from '@rneui/themed'
-
+import { StatusBar } from 'expo-status-bar';
 
 AppState.addEventListener('change', (state) => {
     if (state === 'active') {
@@ -71,9 +71,11 @@ export default function Auth() {
     }
 
     return (
+        <>
+        <StatusBar style="auto" />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
-                <Text style={styles.title}>Please log in!</Text>
+                <Text style={styles.title}>CapyStudy</Text>
                 <Image
                     source={require('../assets/images/capy/capy-waving-nobg.png')}
                     style={styles.botImage}
@@ -124,6 +126,8 @@ export default function Auth() {
 
             </View>
         </TouchableWithoutFeedback>
+
+        </>
     )
 }
 
@@ -133,6 +137,7 @@ const styles = StyleSheet.create({
         padding: 12,
         alignItems: 'center', // Center the content horizontally
         justifyContent: 'flex-start', // Align items at the top
+        backgroundColor: "#25292e",
       },
       title: {
         fontSize: 40,
@@ -163,8 +168,8 @@ const styles = StyleSheet.create({
       botImage: {
         display: 'flex',
         alignSelf: 'center',
-        width: 250,
-        height: 250,
+        width: 150,
+        height: 150,
         marginTop: 20,
         marginBottom: 30,
         marginLeft: -20,

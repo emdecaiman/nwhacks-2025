@@ -26,7 +26,7 @@ export default function SettingScreen({ onUpdateSettings }) {
         setTotalTime(total);
     }, [numIntervals, studyTime, breakTime]);
 
-    const handleStartSession = async () => {
+    const handleSave = async () => {
         const { data, error } = await supabase.auth.getUser();
         if (error) {
             alert(error.message);
@@ -46,6 +46,8 @@ export default function SettingScreen({ onUpdateSettings }) {
             .from('user_settings')
             .update({ study_time: studyTime, break_time: breakTime, num_intervals: numIntervals })
             .eq('user_id', userId);
+
+        setModalVisible(false);
 
         if (updateError) {
             alert(updateError.message);
@@ -96,7 +98,7 @@ export default function SettingScreen({ onUpdateSettings }) {
                             <Text style={styles.totalTime}>{totalTime} minutes</Text>
                         </View>
                         <View style={styles.buttonRow}>
-                            <Button label="Save" onPress={handleStartSession} />
+                            <Button label="Save" onPress={handleSave} />
                             <Button label="Cancel" onPress={() => setModalVisible(false)} />
                         </View>
                     </View>
