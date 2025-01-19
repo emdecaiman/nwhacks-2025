@@ -12,6 +12,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
     const [timerCount, setTimer] = useState<number>(studyInterval * 60);
     const [isStudyTime, setIsStudyTime] = useState<Boolean>(true);
     const [timeElapsed, setTimeElapsed] = useState<number>(0);
+    
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
