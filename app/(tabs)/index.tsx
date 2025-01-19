@@ -116,10 +116,30 @@ export default function Index() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleToggle = () => {
+    const handleToggle = async () => {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data.user) {
+            console.error('User not found');
+            return;
+        }
+        const user = data.user;
+
+        if (!isEnabled) {
+            const start = new Date();
+            setStartTime(start);
+            const { error: insertError } = await supabase
+                .from('study_sessions')
+                .insert([{ user_id: user.id, start_time: start }]);
+            if (insertError) {
+                console.error(insertError.message);
+            } else {
+                setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
+                setChatMessage('Ask me anything!');
+            }
+        }
+
         setIsEnabled(!isEnabled);
     };
-
     const handleEndSession = async () => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data.user) {
@@ -141,7 +161,7 @@ export default function Index() {
                 console.error(updateError.message);
             } else {
                 setImage(require('../../assets/images/capy/capy-sitting-nobg.png'));
-                setChatMessage('Hi!');
+                setChatMessage('Begin your study session whenever you are ready!');
             }
         }
         setStartTime(null);
