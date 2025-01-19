@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ChatBubble from "@/components/ChatBubble";
 import ChatBox from "@/components/ChatBox";
 import { format, toZonedTime } from 'date-fns-tz';
+import { useFonts } from 'expo-font';
 
 const TIMEZONE = 'America/Los_Angeles'; // PST timezone
 
@@ -74,6 +75,11 @@ export default function Index() {
     const [isChatBoxVisible, setIsChatBoxVisible] = useState<boolean>(false);
     const [timerKey, setTimerKey] = useState<string>(`${studyInterval}-${breakInterval}-${numIntervals}`);
     const [isFirstToggle, setIsFirstToggle] = useState<boolean>(true);
+
+    const [fontsLoaded] = useFonts({
+        'Roboto-Regular': require('../../assets/fonts/Roboto-Regular.ttf'),
+        'Roboto-Bold': require('../../assets/fonts/Roboto-Bold.ttf'),
+    });
 
     useEffect(() => {
         async function fetchNameAndSession() {
@@ -203,6 +209,7 @@ export default function Index() {
     return (
         <View style={styles.container}>
             <View style={styles.timerContainer}>
+            <Text style={styles.header}>Capy Study</Text>
                 <Timer 
                     isEnabled={isEnabled} 
                     studyInterval={studyInterval} 
@@ -241,12 +248,22 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         marginBottom: 20,
+        fontFamily: 'Roboto-Regular',
     },
     timerContainer: {
         flex: 1,
         marginTop: 100,
+        paddingTop: 100,
         alignItems: 'center',
         gap: 20,
+    },
+    header: {
+        color: 'white',
+        fontSize: 60,
+        marginTop: -80,
+        marginBottom: 20,
+        paddingBottom: 30,
+        fontFamily: 'Roboto-Bold',
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -255,8 +272,8 @@ const styles = StyleSheet.create({
     },
     botContainer: {
         position: 'absolute',
-        bottom: 0,
-        right: 0,
+        bottom: 25,
+        right: 10,
         alignItems: 'center',
     },
     botImage: {
