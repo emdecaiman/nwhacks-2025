@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 10,
         alignItems: 'center',
+        gap: 20,
     },
     capyImage: {
         width: 50,

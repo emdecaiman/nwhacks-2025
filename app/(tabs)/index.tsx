@@ -214,8 +214,8 @@ export default function Index() {
                             pressable={isEnabled}
                             onPress={handleChatBubblePress}
                         />}
+                <ChatBox visible={isChatBoxVisible} onClose={handleCloseChatBox} userName={name || 'User'} />
             </View>
-            <ChatBox visible={isChatBoxVisible} onClose={handleCloseChatBox} userName={name || 'User'} />
         </View>
     );
 }
