@@ -4,6 +4,7 @@ import Timer from "@/components/Timer";
 import { supabase } from '../../lib/supabase';
 import { useEffect, useState } from "react";
 import ChatBubble from "@/components/ChatBubble";
+import ChatBox from "@/components/ChatBox";
 
 async function getName(userId: string) {
     const { data, error } = await supabase
@@ -36,22 +37,30 @@ async function getActiveSession(userId: string) {
 }
 
 async function getIntervalSettings(userId: string) {
+    console.log(userId);
     const { data, error } = await supabase
         .from('user_settings')
         .select('study_time, break_time, num_intervals')
         .eq('user_id', userId)
         .single();
 
+    // error checking (grrr)
     if (error) {
-        console.error(error);
+        console.error('Error fetching interval settings:', error);
         return null;
     }
 
+    if (!data) {
+        console.error('No interval settings found for user:', userId);
+        return null;
+    }
+
+    console.log('Interval settings fetched:', data);
     return data;
 }
 
 export default function Index() {
-    const [isEnabled, setIsEnabled] = useState<Boolean>(false);
+    const [isEnabled, setIsEnabled] = useState<boolean>(false);
     const [studyInterval, setStudyInterval] = useState<number>(0);
     const [breakInterval, setBreakInterval] = useState<number>(0);
     const [numIntervals, setNumIntervals] = useState<number>(0);
@@ -59,6 +68,7 @@ export default function Index() {
     const [image, setImage] = useState(require('../../assets/images/capy/capy-waving-nobg.png'));
     const [chatMessage, setChatMessage] = useState<string>('Hi!');
     const [startTime, setStartTime] = useState<Date | null>(null);
+    const [isChatBoxVisible, setIsChatBoxVisible] = useState<boolean>(false);
 
     useEffect(() => {
         async function fetchNameAndSession() {
@@ -127,6 +137,7 @@ export default function Index() {
                 console.error(insertError.message);
             } else {
                 setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
+                setChatMessage('Ask me anything!');
             }
         } else {
             // End session
@@ -151,6 +162,14 @@ export default function Index() {
         setIsEnabled(!isEnabled);
     };
 
+    const handleChatBubblePress = () => {
+        setIsChatBoxVisible(true);
+    };
+
+    const handleCloseChatBox = () => {
+        setIsChatBoxVisible(false);
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.timerContainer}>
@@ -165,9 +184,13 @@ export default function Index() {
             </View>
             <View style={styles.botContainer}>
                 <Image source={image} style={styles.botImage} />
-                {name && <ChatBubble message={chatMessage} />}
+                {name &&<ChatBubble 
+                            message={chatMessage} 
+                            pressable={isEnabled}
+                            onPress={handleChatBubblePress}
+                        />}
             </View>
-
+            <ChatBox visible={isChatBoxVisible} onClose={handleCloseChatBox} userName={name || 'User'} />
         </View>
     );
 }
