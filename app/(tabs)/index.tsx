@@ -69,6 +69,7 @@ export default function Index() {
     const [chatMessage, setChatMessage] = useState<string>('Hi!');
     const [startTime, setStartTime] = useState<Date | null>(null);
     const [isChatBoxVisible, setIsChatBoxVisible] = useState<boolean>(false);
+    const [timerKey, setTimerKey] = useState<string>(`${studyInterval}-${breakInterval}-${numIntervals}`);
 
     useEffect(() => {
         async function fetchNameAndSession() {
@@ -98,6 +99,7 @@ export default function Index() {
                 setStudyInterval(intervalSettings.study_time);
                 setBreakInterval(intervalSettings.break_time);
                 setNumIntervals(intervalSettings.num_intervals);
+                setTimerKey(`${intervalSettings.study_time}-${intervalSettings.break_time}-${intervalSettings.num_intervals}`);
                 }
             } else {
                 console.error('User not found');
@@ -114,7 +116,11 @@ export default function Index() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleToggle = async () => {
+    const handleToggle = () => {
+        setIsEnabled(!isEnabled);
+    };
+
+    const handleEndSession = async () => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data.user) {
             console.error('User not found');
@@ -122,39 +128,33 @@ export default function Index() {
         }
         const user = data.user;
 
-        if (!isEnabled) {
-            const start = new Date();
-            setStartTime(start);
-            const { error: insertError } = await supabase
+        const end = new Date();
+        if (startTime) {
+            const totalTime = end.getTime() - startTime.getTime();
+            const { error: updateError } = await supabase
                 .from('study_sessions')
-                .insert([{ user_id: user.id, start_time: start }]);
-            if (insertError) {
-                console.error(insertError.message);
+                .update({ end_time: end, total_time: totalTime })
+                .eq('user_id', user.id)
+                .eq('start_time', startTime.toISOString())
+                .single();
+            if (updateError) {
+                console.error(updateError.message);
             } else {
-                setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
-                setChatMessage('Ask me anything!');
+                setImage(require('../../assets/images/capy/capy-sitting-nobg.png'));
+                setChatMessage('Hi!');
             }
-        } else {
-            // End session
-            const end = new Date();
-            if (startTime) {
-                const totalTime = end.getTime() - startTime.getTime();
-                const { error: updateError } = await supabase
-                    .from('study_sessions')
-                    .update({ end_time: end, total_time: totalTime })
-                    .eq('user_id', user.id)
-                    .eq('start_time', startTime.toISOString())
-                    .single();
-                if (updateError) {
-                    console.error(updateError.message);
-                } else {
-                    setImage(require('../../assets/images/capy/capy-sitting-nobg.png'));
-                }
-            }
-            setStartTime(null);
         }
+        setStartTime(null);
+        setIsEnabled(false);
 
-        setIsEnabled(!isEnabled);
+        // Reload the timer with default settings
+        const intervalSettings = await getIntervalSettings(user.id);
+        if (intervalSettings) {
+            setStudyInterval(intervalSettings.study_time);
+            setBreakInterval(intervalSettings.break_time);
+            setNumIntervals(intervalSettings.num_intervals);
+            setTimerKey(`${intervalSettings.study_time}-${intervalSettings.break_time}-${intervalSettings.num_intervals} - ${Date.now()}`);
+        }
     };
 
     const handleChatBubblePress = () => {
@@ -173,10 +173,13 @@ export default function Index() {
                     studyInterval={studyInterval} 
                     breakInterval={breakInterval} 
                     numIntervals={numIntervals} 
-                    key={`${studyInterval}-${breakInterval}-${numIntervals}`}
+                    key={timerKey}
                     
                 />
-                <Button label={isEnabled ? "Pause" : "Start"} onPress={handleToggle} />
+                <View style={styles.buttonContainer}>
+                    <Button label={isEnabled ? "Pause" : "Start"} onPress={handleToggle} />
+                    {isEnabled && <Button label="End Session" onPress={handleEndSession} />}
+                </View>
             </View>
             <View style={styles.botContainer}>
                 <Image source={image} style={styles.botImage} />
@@ -209,6 +212,11 @@ const styles = StyleSheet.create({
         marginTop: 100,
         alignItems: 'center',
         gap: 20,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '80%',
     },
     botContainer: {
         position: 'absolute',
