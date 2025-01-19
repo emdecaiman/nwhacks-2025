@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, TextInput, Button, StyleSheet, Text, Image, ScrollView, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { OPENAI_API_KEY } from '@env';
+
 interface ChatBoxProps {
     visible: boolean;
     onClose: () => void;
@@ -11,6 +12,7 @@ interface Message {
     sender: string;
     content: string;
 }
+
 
 const ChatBox: React.FC<ChatBoxProps> = ({ visible, onClose, userName }) => {
     const [question, setQuestion] = useState<string>('');
@@ -31,8 +33,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ visible, onClose, userName }) => {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': OPENAI_API_KEY,
+                    // 'Content-Type': 'application/json',
+                    // 'Authorization': 
                 },
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
