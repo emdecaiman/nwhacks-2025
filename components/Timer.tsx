@@ -11,6 +11,7 @@ type Props = {
 const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
     const [timerCount, setTimer] = useState<number>(studyInterval * 60);
     const [isStudyTime, setIsStudyTime] = useState<Boolean>(true);
+    const [timeElapsed, setTimeElapsed] = useState<number>(0);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -30,6 +31,20 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
         return () => clearInterval(interval);
     }, [isEnabled, isStudyTime]);
 
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isEnabled) {
+            interval = setInterval(() => {
+                setTimeElapsed(prevTimeCount => {
+                    return prevTimeCount + 1;
+                });
+            }, 1000);
+        }
+        //cleanup the interval on complete
+        return () => clearInterval(interval);
+    }, [isEnabled]);
+
     const formatTime = (count: number) => {
         const minutes = Math.floor(count / 60);
         const seconds = count % 60;
@@ -38,16 +53,17 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.progressText}>{formatTime(timeElapsed)}</Text>
             <View style={styles.progressContainer}>
                 <CircularProgress
                     value={timerCount}
                     radius={120}
                     maxValue={isStudyTime ? studyInterval * 60 : breakInterval * 60}
-                    progressValueColor={"#fff"}
                     activeStrokeWidth={15}
                     inActiveStrokeWidth={15}
                     duration={1000}
                     showProgressValue={false}
+                    activeStrokeColor={isStudyTime ? "#4CBF72" : "#FFAD33"}
                 />
                 <View style={styles.progressTextContainer}>
                     <Text style={styles.progressText}>{formatTime(timerCount)}</Text>
@@ -61,6 +77,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
 const styles = StyleSheet.create({
     container: {
         alignItems: "center",
+        gap: 15,
     },
     progressContainer: {
         position: "relative",
