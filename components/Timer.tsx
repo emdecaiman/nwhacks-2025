@@ -17,7 +17,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
     const [intervalComplete, setIntervalComplete] = useState<Boolean>(false);
     const [timeElapsed, setTimeElapsed] = useState<number>(0);
     const [intervalsLeft, setIntervalsLeft] = useState<number>(numIntervals);
-    const [currentInterval, setCurrentInterval] = useState<number>(0);
+    const [currentInterval, setCurrentInterval] = useState<number>(1);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
 
     async function playSound() {
@@ -46,11 +46,11 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
                             return breakInterval * 60;
                         } else {
                             setIntervalsLeft(prev => prev - 1);
-                            setCurrentInterval(prev => prev + 1);
                             if (intervalsLeft - 1 === 0) {
                                 setIntervalComplete(true);
                                 return 0;
                             }
+                            setCurrentInterval(prev => prev + 1);
                             setIsStudyTime(true);
                             return studyInterval * 60;
                         }
@@ -85,7 +85,6 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
     return (
         <View style={styles.container}>
             <Text style={styles.elapsedText}>{`${formatTime(timeElapsed)}`}</Text>
-            <Text style={styles.progressText}>{`Interval: ${currentInterval}/${numIntervals}`}</Text>
             <View style={styles.progressContainer}>
                 <CircularProgress
                     value={timerCount}
@@ -99,7 +98,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
                 />
                 <View style={styles.progressTextContainer}>
                     <Text style={styles.progressText}>{formatTime(timerCount)}</Text>
-                    <Text style={styles.progressText}>{isStudyTime ? "Study" : "Break"}</Text>
+                    <Text style={styles.progressText}>{isStudyTime ? `Study ${currentInterval}/${numIntervals}` : `Break ${currentInterval}/${numIntervals}`}</Text>
                 </View>
             </View>
         </View>
