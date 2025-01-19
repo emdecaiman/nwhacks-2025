@@ -5,6 +5,9 @@ import { supabase } from '../../lib/supabase';
 import { useEffect, useState } from "react";
 import ChatBubble from "@/components/ChatBubble";
 import ChatBox from "@/components/ChatBox";
+import { format, toZonedTime } from 'date-fns-tz';
+
+const TIMEZONE = 'America/Los_Angeles'; // PST timezone
 
 async function getName(userId: string) {
     const { data, error } = await supabase
@@ -127,11 +130,14 @@ export default function Index() {
                 }
                 const user = data.user;
 
-                const start = new Date();
+                 // Get current time in PST
+                const now = new Date();
+                const start = toZonedTime(now, TIMEZONE); // Convert to PST
+                const startISO = format(start, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: TIMEZONE });
                 setStartTime(start);
                 const { error: insertError } = await supabase
                     .from('study_sessions')
-                    .insert([{ user_id: user.id, start_time: start }]);
+                    .insert([{ user_id: user.id, start_time: startISO }]);
                 if (insertError) {
                     console.error(insertError.message);
                 } else {
@@ -153,12 +159,15 @@ export default function Index() {
         }
         const user = data.user;
 
-        const end = new Date();
+        const now = new Date();
+        const end = toZonedTime(now, TIMEZONE); // Convert to PST
+        const endISO = format(end, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: TIMEZONE });
+    
         if (startTime) {
             const totalTime = end.getTime() - startTime.getTime();
             const { error: updateError } = await supabase
                 .from('study_sessions')
-                .update({ end_time: end, total_time: totalTime })
+                .update({ end_time: endISO, total_time: totalTime })
                 .eq('user_id', user.id)
                 .is('end_time', null)
                 .single();
