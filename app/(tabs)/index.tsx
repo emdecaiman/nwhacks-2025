@@ -4,6 +4,7 @@ import Timer from "@/components/Timer";
 import { supabase } from '../../lib/supabase';
 import { useEffect, useState } from "react";
 import ChatBubble from "@/components/ChatBubble";
+import ChatBox from "@/components/ChatBox";
 
 async function getName(userId: string) {
     const { data, error } = await supabase
@@ -67,6 +68,7 @@ export default function Index() {
     const [image, setImage] = useState(require('../../assets/images/capy/capy-waving-nobg.png'));
     const [chatMessage, setChatMessage] = useState<string>('Hi!');
     const [startTime, setStartTime] = useState<Date | null>(null);
+    const [isChatBoxVisible, setIsChatBoxVisible] = useState<boolean>(false);
 
     useEffect(() => {
         async function fetchNameAndSession() {
@@ -157,8 +159,11 @@ export default function Index() {
     };
 
     const handleChatBubblePress = () => {
-        console.log('Chat bubble pressed!');
-        // Logic to open chat box goes here
+        setIsChatBoxVisible(true);
+    };
+
+    const handleCloseChatBox = () => {
+        setIsChatBoxVisible(false);
     };
 
     return (
@@ -175,7 +180,7 @@ export default function Index() {
                             onPress={handleChatBubblePress}
                         />}
             </View>
-
+            <ChatBox visible={isChatBoxVisible} onClose={handleCloseChatBox} userName={name || 'User'} />
         </View>
     );
 }

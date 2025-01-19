@@ -32,12 +32,17 @@ yarn-error.*
 # local env files
 .env*.local
 
+.env
+
 # typescript
 *.tsbuildinfo
 
 # project files
 package-lock.json
 package.json
+
+babel.config.js
+env.d.ts
 
 app-example
 
