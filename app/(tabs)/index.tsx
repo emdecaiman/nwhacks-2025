@@ -77,18 +77,18 @@ export default function Index() {
                     console.error('User profile not found');
                 }
 
+                const intervalSettings = await getIntervalSettings(user.id);
+                if (intervalSettings) {
+                    setStudyInterval(intervalSettings.study_time);
+                    setBreakInterval(intervalSettings.break_time);
+                    setNumIntervals(intervalSettings.num_intervals);
+                }
+
                 const activeSession = await getActiveSession(user.id);
                 if (activeSession) {
                     setIsEnabled(true);
                     setStartTime(new Date(activeSession.start_time));
                     setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
-                }
-
-                const intervalSettings = await getIntervalSettings(user.id);
-                if (intervalSettings) {
-                setStudyInterval(intervalSettings.study_time);
-                setBreakInterval(intervalSettings.break_time);
-                setNumIntervals(intervalSettings.num_intervals);
                 }
             } else {
                 console.error('User not found');
@@ -104,6 +104,10 @@ export default function Index() {
 
         return () => clearTimeout(timer);
     }, []);
+
+    // useEffect(() => {
+    //     console.log(`Study Interval: ${studyInterval}, Break Interval: ${breakInterval}, Number of Intervals: ${numIntervals}`);
+    // }, [studyInterval, breakInterval, numIntervals]);
 
     const handleToggle = async () => {
         const { data, error } = await supabase.auth.getUser();
@@ -150,7 +154,13 @@ export default function Index() {
     return (
         <View style={styles.container}>
             <View style={styles.timerContainer}>
-                <Timer isEnabled={isEnabled} studyInterval={studyInterval} breakInterval={breakInterval} numIntervals={numIntervals} />
+                <Timer 
+                    isEnabled={isEnabled} 
+                    studyInterval={studyInterval} 
+                    breakInterval={breakInterval} 
+                    numIntervals={numIntervals} 
+                    key={`${studyInterval}-${breakInterval}-${numIntervals}`} // Add key to force re-render
+                />
                 <Button label={isEnabled ? "Pause" : "Start"} onPress={handleToggle} />
             </View>
             <View style={styles.botContainer}>
