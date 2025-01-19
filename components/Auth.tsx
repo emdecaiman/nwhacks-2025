@@ -46,7 +46,7 @@ export default function Auth() {
         });
 
         if (error) {
-            Alert.alert("ERRROOOORRR");
+            Alert.alert(error.message);
         } else if (data && data.user) {
             const user = data.user;
             // Update the user's profile with the full name

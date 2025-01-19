@@ -36,22 +36,30 @@ async function getActiveSession(userId: string) {
 }
 
 async function getIntervalSettings(userId: string) {
+    console.log(userId);
     const { data, error } = await supabase
         .from('user_settings')
         .select('study_time, break_time, num_intervals')
         .eq('user_id', userId)
         .single();
 
+    // error checking (grrr)
     if (error) {
-        console.error(error);
+        console.error('Error fetching interval settings:', error);
         return null;
     }
 
+    if (!data) {
+        console.error('No interval settings found for user:', userId);
+        return null;
+    }
+
+    console.log('Interval settings fetched:', data);
     return data;
 }
 
 export default function Index() {
-    const [isEnabled, setIsEnabled] = useState<Boolean>(false);
+    const [isEnabled, setIsEnabled] = useState<boolean>(false);
     const [studyInterval, setStudyInterval] = useState<number>(0);
     const [breakInterval, setBreakInterval] = useState<number>(0);
     const [numIntervals, setNumIntervals] = useState<number>(0);
@@ -123,6 +131,7 @@ export default function Index() {
                 console.error(insertError.message);
             } else {
                 setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
+                setChatMessage('Ask me anything!');
             }
         } else {
             // End session
@@ -147,6 +156,11 @@ export default function Index() {
         setIsEnabled(!isEnabled);
     };
 
+    const handleChatBubblePress = () => {
+        console.log('Chat bubble pressed!');
+        // Logic to open chat box goes here
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.timerContainer}>
@@ -155,7 +169,11 @@ export default function Index() {
             </View>
             <View style={styles.botContainer}>
                 <Image source={image} style={styles.botImage} />
-                {name && <ChatBubble message={chatMessage} />}
+                {name &&<ChatBubble 
+                            message={chatMessage} 
+                            pressable={isEnabled}
+                            onPress={handleChatBubblePress}
+                        />}
             </View>
 
         </View>
