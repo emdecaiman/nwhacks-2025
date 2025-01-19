@@ -40,7 +40,7 @@ export default function Index() {
         const timer = setTimeout(() => {
             setImage(require('../../assets/images/capy/capy-sitting-nobg.png'));
             setText('Begin your study session whenever you are ready!');
-        }, 3000);
+        }, 5000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -64,22 +64,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#25292e',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    text: {
-        color: '#fff',
+      },
+      text: {
+        color: 'white',
         fontSize: 18,
-    },
-    botContainer: {
+        marginBottom: 20,
+      },
+      botContainer: {
+        position: 'absolute',
+        bottom: 50,
         alignItems: 'center',
-        marginTop: 20,
-    },
-    botImage: {
-        width: 100,
-        height: 100,
-    },
-    botText: {
+      },
+      botImage: {
+        width: 350,
+        height: 350,
+      },
+      botText: {
         color: 'white',
         fontSize: 16,
-        marginTop: 10,
-    },
+        marginBottom: 10,
+      },
 });
