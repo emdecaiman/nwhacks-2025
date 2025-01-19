@@ -19,7 +19,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
     const [intervalsLeft, setIntervalsLeft] = useState<number>(numIntervals);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
 
-    async function playSound(times: number) {
+    async function playSound() {
         const { sound } = await Audio.Sound.createAsync(BellSound);
         setSound(sound);
         await sound.playAsync();
@@ -39,7 +39,7 @@ const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props)
             interval = setInterval(() => {
                 setTimer(lastTimerCount => {
                     if (lastTimerCount === 0) {
-                        playSound(3); // Play sound 3 times
+                        playSound(); // Play sound 3 times
                         if (isStudyTime) {
                             setIsStudyTime(false);
                             return breakInterval * 60;

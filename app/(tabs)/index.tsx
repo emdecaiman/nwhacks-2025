@@ -37,6 +37,7 @@ async function getActiveSession(userId: string) {
 }
 
 async function getIntervalSettings(userId: string) {
+    console.log(userId);
     const { data, error } = await supabase
         .from('user_settings')
         .select('study_time, break_time, num_intervals')
@@ -54,6 +55,7 @@ async function getIntervalSettings(userId: string) {
         return null;
     }
 
+    console.log('Interval settings fetched:', data);
     return data;
 }
 
