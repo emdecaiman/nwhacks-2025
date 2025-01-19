@@ -6,22 +6,34 @@ type Props = {
     isEnabled: Boolean;
     studyInterval: number;
     breakInterval: number;
+    numIntervals: number;
 }
 
-const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
+const Timer = ({ isEnabled, studyInterval, breakInterval, numIntervals }: Props) => {
     const [timerCount, setTimer] = useState<number>(studyInterval * 60);
     const [isStudyTime, setIsStudyTime] = useState<Boolean>(true);
+    const [intervalComplete, setIntervalComplete] = useState<Boolean>(false);
     const [timeElapsed, setTimeElapsed] = useState<number>(0);
-    
+    const [intervalsLeft, setIntervalsLeft] = useState<number>(numIntervals);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
-        if (isEnabled) {
+        if (isEnabled && intervalsLeft > 0) {
             interval = setInterval(() => {
                 setTimer(lastTimerCount => {
-                    if (lastTimerCount == 0) {
-                        setIsStudyTime(!isStudyTime);
-                        return isStudyTime ? breakInterval * 60 : studyInterval * 60;
+                    if (lastTimerCount === 0) {
+                        if (isStudyTime) {
+                            setIsStudyTime(false);
+                            return breakInterval * 60;
+                        } else {
+                            setIntervalsLeft(prev => prev - 1);
+                            if (intervalsLeft - 1 === 0) {
+                                setIntervalComplete(true);
+                                return 0;
+                            }
+                            setIsStudyTime(true);
+                            return studyInterval * 60;
+                        }
                     } else {
                         return lastTimerCount - 1;
                     }
@@ -30,21 +42,19 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
         }
         //cleanup the interval on complete
         return () => clearInterval(interval);
-    }, [isEnabled, isStudyTime]);
+    }, [isEnabled, isStudyTime, intervalsLeft, intervalComplete, studyInterval, breakInterval]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
 
-        if (isEnabled) {
+        if (isEnabled && !intervalComplete) {
             interval = setInterval(() => {
-                setTimeElapsed(prevTimeCount => {
-                    return prevTimeCount + 1;
-                });
+                setTimeElapsed(prevTimeCount => prevTimeCount + 1);
             }, 1000);
         }
         //cleanup the interval on complete
         return () => clearInterval(interval);
-    }, [isEnabled]);
+    }, [isEnabled, intervalComplete]);
 
     const formatTime = (count: number) => {
         const minutes = Math.floor(count / 60);
@@ -54,7 +64,8 @@ const Timer = ({ isEnabled, studyInterval, breakInterval }: Props) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.progressText}>{formatTime(timeElapsed)}</Text>
+            <Text style={styles.progressText}>{`Time Elapsed: ${formatTime(timeElapsed)}`}</Text>
+            <Text style={styles.progressText}>{`Intervals Left: ${intervalsLeft}`}</Text>
             <View style={styles.progressContainer}>
                 <CircularProgress
                     value={timerCount}
