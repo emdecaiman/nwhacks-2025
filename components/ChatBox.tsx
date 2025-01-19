@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, TextInput, Button, StyleSheet, Text, Image, ScrollView, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { OPENAI_API_KEY } from '@env';
+import { supabase } from '../lib/supabase';
 
 interface ChatBoxProps {
     visible: boolean;
@@ -33,8 +33,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ visible, onClose, userName }) => {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
-                    // 'Content-Type': 'application/json',
-                    // 'Authorization': 
+                    'Content-Type': 'application/json',
+                    'Authorization': '',
                 },
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
@@ -66,6 +66,22 @@ const ChatBox: React.FC<ChatBoxProps> = ({ visible, onClose, userName }) => {
         }
     };
 
+    const handleSaveChatLog = async () => {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data.user) {
+            console.error('User not found');
+            return;
+        }
+        const user = data.user;
+
+        const { error: insertError } = await supabase
+            .from('chat_history')
+            .insert([{ user_id: user.id, chat_log: conversation }]);
+        if (insertError) {
+            console.error(insertError.message);
+        }
+    };
+
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -88,6 +104,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ visible, onClose, userName }) => {
                             onChangeText={setQuestion}
                         />
                         <Button title="Ask" onPress={handleAskQuestion} disabled={loading} />
+                        <Button title="Save Chat Log" onPress={handleSaveChatLog} />
                         <Button title="Close" onPress={onClose} />
                     </View>
                 </View>
