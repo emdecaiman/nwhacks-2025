@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, Button, Alert } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
-// function to handle signing out
+// function to handle signing outr
 async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) Alert.alert(error.message);
