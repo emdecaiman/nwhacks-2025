@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, TouchableWithoutFeedback, ScrollView } from 'react-native';
 
 interface StudySession {
     user_id: string;
@@ -12,6 +12,11 @@ interface ChatLog {
     user_id: string;
     date_created: string;
     chat_log: any; // You can define a more specific type if you know the structure of the chat log
+}
+
+interface Message {
+    sender: string;
+    content: string;
 }
 
 interface InfoModalProps {
@@ -54,7 +59,14 @@ const InfoModal: React.FC<InfoModalProps> = ({ visible, onClose, type, data }) =
     const renderChatItem = ({ item }: { item: ChatLog }) => (
         <View style={styles.itemContainer}>
             <Text style={styles.itemText}>Date: {new Date(item.date_created).toLocaleTimeString()}</Text>
-            <Text style={styles.itemText}>Chat Log: {JSON.stringify(item.chat_log)}</Text>
+            <ScrollView style={styles.conversation}>
+                {item.chat_log.map((msg: Message, index: number) => (
+                    <View key={index} style={styles.messageContainer}>
+                        <Text style={styles.sender}>{msg.sender}:</Text>
+                        <Text style={styles.message}>{msg.content}</Text>
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 
@@ -102,6 +114,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        color: 'white',
     },
     modalContent: {
         width: '80%',
@@ -132,14 +145,30 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     itemText: {
-        color: '#fff',
+        color: 'white',
         marginBottom: 5,
     },
     totalText: {
-        color: '#fff',
+        color: 'white',
         fontSize: 18,
         marginTop: 20,
         textAlign: 'center',
+    },
+    conversation: {
+        width: '100%',
+        maxHeight: 200,
+        marginBottom: 10,
+    },
+    messageContainer: {
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
+    sender: {
+        fontWeight: 'bold',
+        marginRight: 5,
+    },
+    message: {
+        flexShrink: 1,
     },
 });
 
