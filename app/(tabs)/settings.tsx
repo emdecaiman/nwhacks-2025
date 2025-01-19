@@ -1,10 +1,18 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert } from 'react-native';
+import { supabase } from '../../lib/supabase';
+
+// function to handle signing out
+async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) Alert.alert(error.message);
+}
 
 export default function SettingScreen() {
+
+
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Settings screen</Text>
-            
+            <Button title="Sign out" onPress={() => signOut()}/>
         </View>
     );
 }
