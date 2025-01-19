@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import Button from "@/components/Button";
 import Timer from "@/components/Timer";
 import { supabase } from '../../lib/supabase';
