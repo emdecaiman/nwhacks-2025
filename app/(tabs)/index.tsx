@@ -70,6 +70,7 @@ export default function Index() {
     const [startTime, setStartTime] = useState<Date | null>(null);
     const [isChatBoxVisible, setIsChatBoxVisible] = useState<boolean>(false);
     const [timerKey, setTimerKey] = useState<string>(`${studyInterval}-${breakInterval}-${numIntervals}`);
+    const [isFirstToggle, setIsFirstToggle] = useState<boolean>(true);
 
     useEffect(() => {
         async function fetchNameAndSession() {
@@ -117,29 +118,33 @@ export default function Index() {
     }, []);
 
     const handleToggle = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data.user) {
-            console.error('User not found');
-            return;
-        }
-        const user = data.user;
-
         if (!isEnabled) {
-            const start = new Date();
-            setStartTime(start);
-            const { error: insertError } = await supabase
-                .from('study_sessions')
-                .insert([{ user_id: user.id, start_time: start }]);
-            if (insertError) {
-                console.error(insertError.message);
-            } else {
-                setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
-                setChatMessage('Ask me anything!');
+            if (isFirstToggle) {
+                const { data, error } = await supabase.auth.getUser();
+                if (error || !data.user) {
+                    console.error('User not found');
+                    return;
+                }
+                const user = data.user;
+
+                const start = new Date();
+                setStartTime(start);
+                const { error: insertError } = await supabase
+                    .from('study_sessions')
+                    .insert([{ user_id: user.id, start_time: start }]);
+                if (insertError) {
+                    console.error(insertError.message);
+                } else {
+                    setImage(require('../../assets/images/capy/capy-laptop-nobg.png'));
+                    setChatMessage('Ask me anything!');
+                }
+                setIsFirstToggle(false);
             }
         }
 
         setIsEnabled(!isEnabled);
     };
+
     const handleEndSession = async () => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data.user) {
@@ -155,7 +160,7 @@ export default function Index() {
                 .from('study_sessions')
                 .update({ end_time: end, total_time: totalTime })
                 .eq('user_id', user.id)
-                .eq('start_time', startTime.toISOString())
+                .is('end_time', null)
                 .single();
             if (updateError) {
                 console.error(updateError.message);
@@ -166,6 +171,7 @@ export default function Index() {
         }
         setStartTime(null);
         setIsEnabled(false);
+        setIsFirstToggle(true);
 
         // Reload the timer with default settings
         const intervalSettings = await getIntervalSettings(user.id);
