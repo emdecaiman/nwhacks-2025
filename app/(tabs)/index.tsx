@@ -23,6 +23,7 @@ export default function Index() {
     const [isEnabled, setIsEnabled] = useState<Boolean>(false);
     const studyInterval = 0.1; // or 50
     const breakInterval = 0.1; // or 10
+    const numIntervals = 2;
     const [name, setName] = useState<string | null>(null);
     const [image, setImage] = useState(require('../../assets/images/capy/capy-waving-nobg.png'));
     const [text, setText] = useState('Hi!');
@@ -59,7 +60,7 @@ export default function Index() {
                 <Image source={image} style={styles.botImage} />
                 <Text style={styles.botText}>{text}</Text>
             </View>
-            <Timer isEnabled={isEnabled} studyInterval={studyInterval} breakInterval={breakInterval} />
+            <Timer isEnabled={isEnabled} studyInterval={studyInterval} breakInterval={breakInterval} numIntervals={numIntervals} />
             <Button label={isEnabled ? "Pause" : "Start"} onPress={() => setIsEnabled(!isEnabled)} />
         </View>
     );
